@@ -176,7 +176,7 @@ class KnownPiracyIE(UnsupportedInfoExtractor):
         r'viewsb\.com',
         r'filemoon\.sx',
         r'hentai\.animestigma\.com',
-        r'thisav\.com',
+        # r'thisav\.com',
         r'gounlimited\.to',
         r'highstream\.tv',
         r'uqload\.com',
@@ -195,9 +195,6 @@ class KnownPiracyIE(UnsupportedInfoExtractor):
 
     _TESTS = [{
         'url': 'http://dood.to/e/5s1wmbdacezb',
-        'only_matching': True,
-    }, {
-        'url': 'https://thisav.com/en/terms',
         'only_matching': True,
     }]
 
