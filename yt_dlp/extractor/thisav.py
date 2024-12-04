@@ -1,9 +1,11 @@
+import cloudscraper
+
 from .common import InfoExtractor
 
 
 class ThisAVIE(InfoExtractor):
     _VALID_URL = (
-        r'https?://(?:www\.)?(?:thisav|missav)\.com/(?:video/|dm13/)?(?P<id>[0-9a-z-]+)'
+        r'https?://(?:www\.)?(?:thisav|missav)\.com(?:/([^/]+))*/(?P<id>.*)'
     )
     _TESTS = [
         {
@@ -28,13 +30,9 @@ class ThisAVIE(InfoExtractor):
     def _real_extract(self, url):
         mobj = self._match_valid_url(url)
         video_id = mobj.group('id')
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows; U; Windows NT 6.0;en-US; rv:1.8.1.7) Gecko/20100101 Firefox/122.0',
-            'Accept-Language': 'en-us;q=0.5',
-            'Sec-Fetch-Mode': 'navigate',
-            'Accept-Encoding': 'gzip, deflate',
-        }
-        webpage = self._download_webpage(url, video_id, headers=headers, timeout=20)
+
+        scraper = cloudscraper.create_scraper()
+        webpage = scraper.get(url).text
         title = self._html_extract_title(webpage)
         video_info = self._html_search_regex(
             r'm3u8(.*?)source', webpage, 'video info', default=None,
@@ -61,9 +59,9 @@ class ThisAVIE(InfoExtractor):
             )
             playlist_url = base_url + 'playlist.m3u8'
 
-            playlist = self._download_webpage(
-                playlist_url, video_id, 'Downloading playlist',
-            )
+            playlist = scraper.get(
+                playlist_url,
+            ).text
 
             formats = []
             lines = playlist.strip().split('\n')
@@ -74,8 +72,8 @@ class ThisAVIE(InfoExtractor):
                     video_url = base_url + lines[i + 1]
                     resolution = line.split(',')[-1].split('=')[-1].split('x')
                     format_item['format_id'] = str(i)
-                    format_item['width'] = resolution[0]
-                    format_item['height'] = resolution[1]
+                    format_item['width'] = int(resolution[0])
+                    format_item['height'] = int(resolution[1])
                     format_item['url'] = video_url
                     format_item['manifest_url'] = playlist_url
                     format_item['ext'] = 'mp4'
