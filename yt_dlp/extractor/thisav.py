@@ -3,7 +3,8 @@ from .common import InfoExtractor
 
 class ThisAVIE(InfoExtractor):
     _VALID_URL = (
-        r'https?://(?:www\.)?(?:thisav|missav)\.com/(?:video/|dm13/)?(?P<id>[0-9a-z-]+)'
+        r'https?://(?:www\.)?(?:thisav|missav|missavtv)\.[a-z]+(?:/([^/]+))*/(?P<id>.*)'
+
     )
     _TESTS = [
         {
